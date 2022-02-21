@@ -1,0 +1,72 @@
+/* サンカク */
+details summary.hide {
+    list-style: none;
+}
+details summary.hide ::-webkit-details-marker {
+    display: none;
+}
+details summary{
+    cursor: pointer;
+}
+/* FAQ like message */
+*{
+    margin:0;
+    padding:0;
+}
+.faq_area {
+    /* 上 | 右 | 下 | 左  要調整*/
+    margin: 0px 0% 0 0%;
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+}
+.faq_area .author{
+    /* 上 | 右 | 下 | 左  要調整*/
+    flex-wrap:nowrap;
+}
+.faq_area img{
+    /* 上 | 右 | 下 | 左  要調整*/
+    margin: 0;
+    width: 30px;    /* 横幅を割合で指定 */
+    height: auto;  /* 高さは自動指定 */
+}
+.faq_area .B,
+.faq_area .A {
+    min-width:80px;
+    padding:10px 2% 10px 2%;
+    color: #fff;
+    border-radius: 10px;
+    position: relative;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+.faq_area .A {
+    text-align:left;
+    margin:5px auto 5px 50px;
+    background-clip: content-box;
+    background: #494044;
+}
+.faq_area .A:before {
+    content: "";
+    border: 10px solid transparent;
+    border-right: 20px solid #494044;
+    position: absolute;
+    left: -20px;
+    top: 20px;
+    -webkit-transform: translateY(-50%);
+    transform: translateY(-50%);
+}
+.faq_area .B {
+    text-align:right;
+    margin:5px 10px 5px auto;
+    background: #0096e5;
+}
+.faq_area .B:after {
+    content: "";
+    border: 10px solid transparent;
+    border-left: 20px solid #0096e5;
+    position: absolute;
+    right: -20px;
+    top: 50%;
+    -webkit-transform: translateY(-50%);
+    transform: translateY(-50%);
+}

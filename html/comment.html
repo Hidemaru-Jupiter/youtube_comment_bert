@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>YouTubeコメント分析器（工事中）</title>
+        <!-- Chart.js -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.min.js"></script>
+        <!-- reCAPTCHA -->
+        <!-- <script src="https://www.google.com/recaptcha/api.js?render=6LdEnTAdAAAAAJeZ0bzz5XEjn4wYRLRiBwgNS8sH"></script> -->
+        <!-- original -->
+        <script src="chart.js"></script>
+        <script src="content.js"></script>
+        <link rel="stylesheet" href="comment.css">
+    </head>
+
+    <body>
+        <h1>YouTubeコメント分析器（工事中）</h1>
+        
+        <dialog id="dialog_discussion" style="position:fixed;left:50%;top:50%;width:80%;height:80%;transform:translate(-50%,-50%);">
+            <div style="text-align:right; margin:0px; padding:0px; height:5%;"><input type="button" value="×" onclick=discussion_button_close() style="height:100%; width:10%; background-color:salmon; color:#ffffff;"></div>
+            <div id="dialog_discussion_content" style="width:100%; height:95%; overflow-wrap:anywhere; overflow-x:hidden; overflow-y:scroll;"></div>
+        </dialog>
+
+        <input type="checkbox" id="get_new_flag"><label> : get new(waste api)</label><br>
+        <input type="text" name="video_ID" id="video_ID" value="https://www.youtube.com/watch?v=EcGkF9SBuSo" style="width:80%;"><button id="search_buttton">取得</button><br>
+        <div id="loading_display"></div>
+        <div id="video_title"></div>
+        
+        <table style="width:100%">
+            <td style="width:50%">
+                <label>top reply rate:</label><input type="number" id="toplevel_count" min="0" max="100000000" value="0" readonly style="background-color:#e9e9e9">/<input type="number" id="all_count" min="0" max="100000000" value="0" readonly style="background-color:#e9e9e9"><br>
+                
+                <label>🤮toxic filter:</label><input type="number" id="toxic_filter" min="50" max="0" value="0">~<input type="number" id="toxic_filter_end" min="0" max="100" value="100">%<br>
+                <label>😊positive filter:</label><input type="number" id="positive_filter" min="0" max="100" value="0">~<input type="number" id="positive_filter_end" min="0" max="100" value="100">%<br>
+                <label>🤣sarcasm filter:</label><input type="number" id="sarcasm_filter" min="0" max="100" value="0">~<input type="number" id="sarcasm_filter_end" min="0" max="100" value="100">%<br>
+                <label>😈spam filter:</label><input type="number" id="spam_filter" min="0" max="100" value="0">~<input type="number" id="spam_filter_end" min="0" max="100" value="100">%<br>
+                <label>🔨construct filter:</label><input type="number" id="construct_filter" min="0" max="100" value="0">~<input type="number" id="construct_filter_end" min="0" max="100" value="100">%<br>
+                <label>💬word filter:</label><input type="text" id="word_filter" value=""><br>
+
+                <table style="width:100%">
+                    <td style="width:50%">
+                        <label>x</label><br>
+                        <input type="radio" name="x" value="toxic" id="toxic_x" checked onclick="display(); draw_chart();"><label for="toxic_x">toxic</label><br>
+                        <input type="radio" name="x" value="negapozi" id="positive_x" onclick="display(); draw_chart();"><label for="positive_x">positive</label><br>
+                        <input type="radio" name="x" value="sarcasm" id="sarcasm_x" onclick="display(); draw_chart();"><label for="sarcasm_x">sarcasm</label><br>
+                        <input type="radio" name="x" value="spam" id="spam_x" onclick="display(); draw_chart();"><label for="spam_x">spam</label><br>
+                        <input type="radio" name="x" value="construct" id="construct_x" onclick="display(); draw_chart();"><label for="construct_x">construct</label><br>
+                    </td>
+                    <td style="width:50%">
+                        <label>y</label><br>
+                        <input type="radio" name="y" value="toxic" id="toxic_y" onclick="display(); draw_chart();"><label for="toxic_y">toxic</label><br>
+                        <input type="radio" name="y" value="negapozi" id="positive_y" checked onclick="display(); draw_chart();"><label for="positive_y">positive</label><br>
+                        <input type="radio" name="y" value="sarcasm" id="sarcasm_y" onclick="display(); draw_chart();"><label for="sarcasm_y">sarcasm</label><br>
+                        <input type="radio" name="y" value="spam" id="spam_y" onclick="display(); draw_chart();"><label for="spam_y">spam</label><br>
+                        <input type="radio" name="y" value="construct" id="construct_y" onclick="display(); draw_chart();"><label for="construct_y">construct</label><br>
+                    </td>
+                </table>
+                <!-- <button id="previous_page" onclick="display(); draw_chart();">グラフを再描画</button><br> -->
+                <label>ソート:</label><input type="text" id="col_name" value="datetime" readonly style="background-color:#e9e9e9"><input type="text" id="asc" value="desc" readonly style="background-color:#e9e9e9"><br>
+                <label>page:</label><input type="number" id="offset" min="0" max="10000" value="0" readonly style="background-color:#e9e9e9">から<input type="number" id="limit" min="0" max="10000" value="100" readonly style="background-color:#e9e9e9">件表示中<br>
+                <button id="previous_page" onclick="press_previous()">前のページ</button><button id="next_page" onclick="press_next()">次のページ</button>
+            </td>
+            <td style="width:50%">
+                <!-- <img src="https://newsatcl-pctr.c.yimg.jp/r/iwiz-amd/20211101-10011100-it_nlab-000-1-view.jpg?exp=10800" height="200px"> -->
+                <div id="chart-container" style="position:relative; width:100%; height:100%;">
+                    <canvas id="chart-area" width="100" height="100"></canvas>
+                </div>
+            </td>
+        </table>
+
+        <div id="table_display"></div>
+        <br><br><br><br><br>
+    </body>
+</html>
