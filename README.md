@@ -1,6 +1,9 @@
 # youtube_comment_analysis
 「複数 BERT モデルで作るツールによるYouTube コメントの可読性改善」内で論じているシステムです。
 
+## デモサイト
+http://160.251.20.148/comment.html
+
 ## setup
 必須
 * api_key.pyのAPI_KEYにYouTube Data APIで取得したAPIを入力する。
