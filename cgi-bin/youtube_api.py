@@ -5,7 +5,7 @@ import my_api_key
 
 args = {
     "video_id"     : sys.argv[1],
-    "get_new_flag" : sys.argv[2]
+    "get_new_flag" : int(sys.argv[2])
 }
 
 connection = pymysql.connect(host='localhost',
@@ -174,7 +174,7 @@ def print_video_reply(video_id, parentId, next_page_token=None):
                     WHERE (video_id=%s AND comment_id=%s)"""
             cursor.execute(sql, 
                 (datetime.replace("T", " ").replace("Z", ""), user_name, authorProfileImageUrl,
-                    channel_id, text, commentId, "toplevel", 
+                    channel_id, text, commentId, parentId, 
                     like_cnt, video_id, 
                     video_id, commentId)
             )
