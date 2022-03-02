@@ -1,15 +1,12 @@
 import requests
-
 import sys
-
-import argparse
 import pymysql
 import my_api_key
 
-parser = argparse.ArgumentParser()
-parser.add_argument('video_id')
-parser.add_argument('get_new_flag', type=int) 
-args = parser.parse_args() # 引数を解析
+args = {
+    "video_id"     : sys.argv[1],
+    "get_new_flag" : sys.argv[2]
+}
 
 connection = pymysql.connect(host='localhost',
                              user='comment',
@@ -20,13 +17,13 @@ connection = pymysql.connect(host='localhost',
 
 with connection.cursor() as cursor:
     sql = "SELECT id FROM return_api WHERE video_id=%s LIMIT 1"
-    cursor.execute(sql, (args.video_id))
+    cursor.execute(sql, (args["video_id"]))
     dbdata = cursor.fetchall()
     if (not len(dbdata) == 0):
         sql = "UPDATE return_api SET create_time=NOW() WHERE video_id=%s"
-        cursor.execute(sql, (args.video_id))
+        cursor.execute(sql, (args["video_id"]))
         connection.commit()
-        if (args.get_new_flag == 0):
+        if (args["get_new_flag"] == 0):
             connection.close()
             print(-1)
             sys.exit()
@@ -90,15 +87,6 @@ def print_video_comment(video_id, next_page_token=None):
         except:
             commentId = ""
         with connection.cursor() as cursor:
-            #     sql = """INSERT INTO return_api 
-            #             (datetime, author_name, authorProfileImageUrl, channel_id, comment, comment_id, replyto, reply_cnt, like_cnt, video_id)
-            #             values
-            #             (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"""
-            #     cursor.execute(sql, 
-            #         (datetime.replace("T", " ").replace("Z", ""),
-            #         user_name, authorProfileImageUrl, channel_id, text, commentId, "toplevel", reply_cnt, like_cnt, video_id)
-            #     )
-            #     connection.commit()
             sql = """UPDATE return_api 
                     SET datetime=%s, author_name=%s, authorProfileImageUrl=%s,
                     channel_id=%s, comment=%s, comment_id=%s, replyto=%s, 
@@ -209,7 +197,7 @@ def print_video_reply(video_id, parentId, next_page_token=None):
 #-----------------------------------------------------------------#
 # youtube_api
 #-----------------------------------------------------------------#
-print_video_comment(args.video_id)
+print_video_comment(args["video_id"])
 #-----------------------------------------------------------------#
 # output
 #-----------------------------------------------------------------#
