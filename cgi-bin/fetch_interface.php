@@ -1,6 +1,6 @@
 <?php
 $python3 = "./python/bin/python3";
-// $SECRET_KEY = "########################################";
+$SECRET_KEY = "########################################";
 
 if($_POST['file_name'] == "youtube_api.py"){
     $command="{$python3} youtube_api.py {$_POST['video_ID']} {$_POST['get_new_flag']}";
