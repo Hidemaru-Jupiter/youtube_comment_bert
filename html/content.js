@@ -161,8 +161,9 @@ function display(){
                     // discussion
                     var button_exist = ""
                     if (reply_cnt != 0){
-                        button_exist = '<input type="button" value="discussion" onclick=discussion_button_show("'
-                        + comment_id+'")>';
+                        button_exist = '<input type="button" value="discussion" '
+                        +'onclick=discussion_button_show("' + comment_id + '",'
+                        +'"' + comment_id + '")>';
                     }
                     td.innerHTML = td_head + '[top]' 
                     + button_exist
@@ -170,8 +171,9 @@ function display(){
                     + td_tail;
                 }else{
                     // discussion
-                    var button_exist = '<input type="button" value="discussion" onclick=discussion_button_show("'
-                        + replyto+'")>';
+                    var button_exist = '<input type="button" value="discussion" '
+                    +'onclick=discussion_button_show("' + replyto + '",'
+                    +'"' + comment_id + '")>';
                     td.innerHTML = td_head + '[reply]' 
                     + button_exist
                     + record[element].replaceAll('\n','<br>')
@@ -201,7 +203,15 @@ function display(){
     
 }
 
-function discussion_button_show(comment_id){
+function discussion_button_show(comment_id, my_comment_id){
+    var dialog_discussion = document.getElementById("dialog_discussion");
+    dialog_discussion.show();
+    var chart_container = document.getElementById("chart-container");
+    chart_container.hidden = true;
+    var dialog_discussion_content = document.getElementById("dialog_discussion_content");
+    dialog_discussion_content.innerHTML = "読み込み中・・・";
+    dialog_discussion_content.scrollTo(0,0);
+
     var postData = new FormData; // フォーム方式で送る場合
     postData.set('file_name', "discussion"); // set()で格納する
     postData.set('comment_id', comment_id);
@@ -215,15 +225,41 @@ function discussion_button_show(comment_id){
     .then((text) => {
         console.log("discussion_button_show", "<-", text);
         var json = JSON.parse(text);
-        var dialog_discussion_content = document.getElementById("dialog_discussion_content");
-        dialog_discussion_content.innerHTML = "";
         var content_text = '<dl class="faq_area">';
         var pre_cannel = "";
+        var scroll_flag = true;
+        var scroll_goal = 0;
+        var comment_memory = {};
+        var comment_tree = {};
+        for (let i=0; i<json.length; i++){//安価付け
+            comment_memory[json[i]["author_name"]] = json[i]["comment_id"];
+            comment_tree[json[i]["comment_id"]] = [];
+            Object.keys(comment_memory).forEach((author_name)=>{
+                if (json[i]["comment"].search("@"+author_name) != -1){
+                    json[i]["comment"] = json[i]["comment"]
+                                        .replaceAll("@"+author_name, 
+                                            "<a id='"+ json[i]["comment_id"]+"_discuss_ret"
+                                            +"' href='#"
+                                            +comment_memory[author_name]+"_discuss'>"
+                                        +"@"+author_name+"</a>")
+                    comment_tree[comment_memory[author_name]].push(json[i]["comment_id"]);
+                }
+            })
+        }
+        console.log(comment_tree);
         json.forEach((record)=>{
             if (pre_cannel != record["author_name"]){
                 pre_cannel = record["author_name"];
-                content_text += '<div class="author"><img src="'+record["authorProfileImageUrl"]+'">'+record["author_name"];
+                content_text += '<div class="author"><img src="'
+                    +record["authorProfileImageUrl"]
+                    +'">'+record["author_name"] 
+                    + "(" + record["datetime"] +")";
+                comment_tree[record["comment_id"]].forEach((reply_comment_id)=>{
+                    content_text += "<a href='#"+reply_comment_id+"_discuss'>"+">>"+"</a> "
+                })
+                content_text += "</div>"
             }else{
+                //連続コメントの場合
                 //スタイルルールの追加
                 var sheets = document.styleSheets
                 var sheet = sheets[sheets.length - 1];
@@ -234,14 +270,19 @@ function discussion_button_show(comment_id){
                 );
             }
             content_text += '<p class="A '+record["comment_id"].replace(".", "_")+'">'
-                        + record["comment"].replaceAll('\n','<br>') + '</p>' +"</div>";
+                        +'<a id="'
+                        +record["comment_id"]+'_discuss"></a>'
+                        + record["comment"].replaceAll('\n','<br>') + '</p>' ; 
+            dialog_discussion_content.innerHTML = content_text + '</dl>';
+            if (scroll_flag){
+                if (record["comment_id"] == my_comment_id){
+                    scroll_flag = false
+                    scroll_goal = dialog_discussion_content.scrollHeight - dialog_discussion_content.clientHeight;
+                    console.log("dialog_discussion_content.scrollHeight end");
+                }
+            }
         })
-        content_text += '</dl>';
-        dialog_discussion_content.innerHTML = content_text;
-        var dialog_discussion = document.getElementById("dialog_discussion");
-        dialog_discussion.show();
-        var chart_container = document.getElementById("chart-container");
-        chart_container.hidden = true;
+        dialog_discussion_content.scrollTo(0, scroll_goal);
     })
 }
 function discussion_button_close(){
@@ -297,7 +338,7 @@ window.addEventListener('load', () => {
                 youtube_video_api(video_ID.value);
                 var get_new_flag = document.getElementById("get_new_flag").checked;
                 youtube_comment_api(video_ID.value, get_new_flag);
-                timer = setInterval('toplevel_rate()', 1000);
+                timer = setInterval('toplevel_rate()', 3000);
             }else{
                 var loading_display = document.getElementById("loading_display");
                 loading_display.innerText = "Try again.";
@@ -418,7 +459,7 @@ function show_comment(col_name, asc, offset=null){
     fetch('../cgi-bin/fetch_interface.php', data)
     .then((res) => res.text())
     .then((text) => {
-        console.log("show_comment", "<-", text);
+        console.log("show_comment", "<-", typeof(text));
         json = JSON.parse(text);
         if (JSON.stringify(result_table["data"]) != JSON.stringify(json)){
             console.log("create_new_table");

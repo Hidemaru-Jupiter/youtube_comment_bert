@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>YouTubeコメント分析器（工事中）</title>
+        <title>YouTubeコメント分析器</title>
         <!-- Chart.js -->
         <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.min.js"></script>
         <!-- reCAPTCHA -->
@@ -13,14 +13,16 @@
     </head>
 
     <body>
-        <h1>YouTubeコメント分析器（工事中）</h1>
+        <h1>YouTubeコメント分析器</h1>
         
         <dialog id="dialog_discussion" style="position:fixed;left:50%;top:50%;width:80%;height:80%;transform:translate(-50%,-50%);">
             <div style="text-align:right; margin:0px; padding:0px; height:5%;"><input type="button" value="×" onclick=discussion_button_close() style="height:100%; width:10%; background-color:salmon; color:#ffffff;"></div>
-            <div id="dialog_discussion_content" style="width:100%; height:95%; overflow-wrap:anywhere; overflow-x:hidden; overflow-y:scroll;"></div>
+            <div id="dialog_discussion_content" style="width:100%; height:95%; overflow-wrap:anywhere; overflow-x:hidden; overflow-y:scroll;">
+                <!-- discussionが表示 -->
+            </div>
         </dialog>
 
-        <input type="checkbox" id="get_new_flag"><label> : get new(waste api)</label><br>
+        <input type="checkbox" id="get_new_flag"><label> : get new</label><br>
         <input type="text" name="video_ID" id="video_ID" value="https://www.youtube.com/watch?v=EcGkF9SBuSo" style="width:80%;"><button id="search_buttton">取得</button><br>
         <div id="loading_display"></div>
         <div id="video_title"></div>
