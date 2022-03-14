@@ -2,7 +2,7 @@
 「複数 BERT モデルで作るツールによるYouTube コメントの可読性改善」内で論じているシステムです。
 
 ## デモサイト
-http://160.251.20.148/comment.html
+https://utubecomment.com/comment.html
 
 ## setup
 必須
